@@ -3,49 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Arcade Space Shooter - Multiplataforma</title>
+    <title>Arcade Space Shooter Multiplataforma</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body data-theme="retro">
 
     <div class="game-container">
-        <!-- Topo: Tema, Seleção de Plataforma e Título -->
+        <!-- Barra Superior -->
         <header class="top-bar">
             <div class="brand">🚀 ARCADE SHOOTER</div>
             <div class="controls">
                 <select id="modeSelect">
-                    <option value="pc">💻 Modo Computador</option>
-                    <option value="mobile">📱 Modo Celular</option>
+                    <option value="pc">💻 Computador</option>
+                    <option value="mobile">📱 Celular</option>
                 </select>
                 <select id="themeSelect">
-                    <option value="retro">🎮 Retro Arcade</option>
+                    <option value="retro">🎮 Retro</option>
                     <option value="cyberpunk">🌃 Cyberpunk</option>
-                    <option value="neon">✨ Neon Glow</option>
-                    <option value="light">☀️ Light Clean</option>
+                    <option value="neon">✨ Neon</option>
+                    <option value="light">☀️ Light</option>
                 </select>
             </div>
         </header>
 
-        <!-- HUD: Placar, Vidas e Bônus -->
+        <!-- Placar e Status -->
         <div class="hud">
             <div>Pts: <span id="score">0</span> | Max: <span id="highScore">0</span></div>
             <div><span id="powerupStatus">Nenhum</span></div>
             <div>Vidas: <span id="lives">❤️❤️❤️</span></div>
         </div>
 
-        <!-- Canvas do Jogo -->
+        <!-- Tela do Jogo -->
         <div class="canvas-wrapper">
             <canvas id="gameCanvas" width="800" height="500"></canvas>
             
-            <!-- Menu Inicial / Game Over -->
             <div id="overlay" class="overlay">
                 <h1 id="overlayTitle">SPACE SHOOTER</h1>
-                <p id="overlaySub">Escolha o modo de jogo acima e clique em iniciar!</p>
+                <p id="overlaySub">Escolha o modo acima e clique para iniciar!</p>
                 <button id="startBtn">Iniciar Jogo</button>
             </div>
         </div>
 
-        <!-- Controles Touch Exclusivos do Modo Celular -->
+        <!-- Controles Virtuais do Celular -->
         <div class="touch-controls" id="touchControls">
             <div class="dpad">
                 <button class="t-btn dpad-up" id="btnUp">▲</button>
@@ -55,6 +54,7 @@
                 </div>
                 <button class="t-btn dpad-down" id="btnDown">▼</button>
             </div>
+            
             <div class="action-btns">
                 <button class="t-btn btn-fire" id="btnFire">🔥 TIRO</button>
             </div>
