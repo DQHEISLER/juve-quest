@@ -1,0 +1,182 @@
+/* ==========================================================================
+   SISTEMA DE VARIÁVEIS E TEMAS (LAYOUTS)
+   ========================================================================== */
+:root {
+    --bg-color: #0b0d17;
+    --card-bg: #16192b;
+    --text-color: #00ffcc;
+    --accent-color: #ff0055;
+    --player-color: #00ffcc;
+    --bullet-color: #ffff00;
+    --canvas-bg: #05070e;
+    --font-family: 'Courier New', Courier, monospace;
+    --border-glow: 0 0 15px rgba(0, 255, 204, 0.4);
+}
+
+[data-theme="cyberpunk"] {
+    --bg-color: #0f051d;
+    --card-bg: #290a59;
+    --text-color: #ffe600;
+    --accent-color: #ff007f;
+    --player-color: #00ffff;
+    --bullet-color: #ff007f;
+    --canvas-bg: #090112;
+    --font-family: 'Segoe UI', Tahoma, sans-serif;
+    --border-glow: 0 0 15px rgba(255, 0, 127, 0.5);
+}
+
+[data-theme="neon"] {
+    --bg-color: #000000;
+    --card-bg: #111111;
+    --text-color: #00ffff;
+    --accent-color: #39ff14;
+    --player-color: #39ff14;
+    --bullet-color: #00ffff;
+    --canvas-bg: #000000;
+    --font-family: Arial, sans-serif;
+    --border-glow: 0 0 20px rgba(57, 255, 20, 0.6);
+}
+
+[data-theme="light"] {
+    --bg-color: #e2e8f0;
+    --card-bg: #ffffff;
+    --text-color: #0f172a;
+    --accent-color: #2563eb;
+    --player-color: #2563eb;
+    --bullet-color: #dc2626;
+    --canvas-bg: #f8fafc;
+    --font-family: 'Trebuchet MS', sans-serif;
+    --border-glow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================================================================
+   ESTILOS GERAIS & ESTRUTURA
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+.game-container {
+    background-color: var(--card-bg);
+    border: 2px solid var(--accent-color);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--border-glow);
+    position: relative;
+    max-width: 840px;
+    width: 100%;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.brand {
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+select {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--accent-color);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: inherit;
+    cursor: pointer;
+    outline: none;
+}
+
+.hud {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    background: rgba(0,0,0,0.2);
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+.canvas-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+canvas {
+    background-color: var(--canvas-bg);
+    border: 1px solid var(--accent-color);
+    border-radius: 6px;
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    color: #ffffff;
+    z-index: 10;
+}
+
+.overlay h1 {
+    font-size: 2.5rem;
+    color: var(--text-color);
+    text-shadow: 0 0 10px var(--text-color);
+}
+
+.overlay p {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+button {
+    padding: 12px 28px;
+    font-size: 1rem;
+    font-weight: bold;
+    background-color: var(--accent-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.1s ease, filter 0.2s;
+}
+
+button:hover {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+}
+
+.footer-info {
+    margin-top: 12px;
+    text-align: center;
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
