@@ -1,0 +1,1147 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+
+:root {
+
+    --bg: #060b14;
+
+    --panel: #0d1524;
+
+    --panel2: #111c2e;
+
+    --line: rgba(255,255,255,.09);
+
+    --text: #f4f7fb;
+
+    --muted: #94a3b8;
+
+    --blue: #4f8cff;
+
+    --cyan: #23d5e8;
+
+    --green: #35df9a;
+
+    --yellow: #ffd166;
+
+    --red: #ff6b7a;
+
+    --shadow:
+        0 24px 70px rgba(0,0,0,.38);
+
+}
+
+
+/* RESET */
+
+* {
+
+    margin: 0;
+
+    padding: 0;
+
+    box-sizing: border-box;
+
+}
+
+
+/* BODY */
+
+body {
+
+    min-height: 100vh;
+
+    color: var(--text);
+
+    font-family:
+        Inter,
+        Arial,
+        sans-serif;
+
+    background:
+
+        radial-gradient(
+            circle at 15% 10%,
+            #10264a 0,
+            transparent 32%
+        ),
+
+        radial-gradient(
+            circle at 90% 85%,
+            #12382f 0,
+            transparent 30%
+        ),
+
+        var(--bg);
+
+    overflow-x: hidden;
+
+}
+
+
+/* EFEITOS DE FUNDO */
+
+.background-orb {
+
+    position: fixed;
+
+    width: 360px;
+
+    height: 360px;
+
+    border-radius: 50%;
+
+    filter: blur(90px);
+
+    opacity: .16;
+
+    pointer-events: none;
+
+}
+
+
+.orb-one {
+
+    background: #3b82f6;
+
+    top: -120px;
+
+    left: -100px;
+
+}
+
+
+.orb-two {
+
+    background: #18d7a1;
+
+    right: -120px;
+
+    bottom: -130px;
+
+}
+
+
+/* CONTAINER */
+
+.game-shell {
+
+    width: min(1100px,92%);
+
+    margin: 0 auto;
+
+    padding: 28px 0 35px;
+
+    position: relative;
+
+}
+
+
+/* TOPO */
+
+.topbar {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 30px;
+
+}
+
+
+.brand {
+
+    display: flex;
+
+    gap: 12px;
+
+    align-items: center;
+
+}
+
+
+.brand-icon {
+
+    width: 45px;
+
+    height: 45px;
+
+    border-radius: 13px;
+
+    display: grid;
+
+    place-items: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--blue),
+            var(--cyan)
+        );
+
+    font-weight: 800;
+
+    box-shadow:
+        0 10px 30px #3182ce40;
+
+}
+
+
+.eyebrow {
+
+    font-size: 10px;
+
+    letter-spacing: 2px;
+
+    color: var(--muted);
+
+    font-weight: 700;
+
+}
+
+
+h1 {
+
+    font:
+        700 24px
+        'Space Grotesk';
+
+    letter-spacing: 1px;
+
+}
+
+
+h1 span {
+
+    color: var(--cyan);
+
+}
+
+
+/* BOTÃO REINICIAR */
+
+.ghost-btn {
+
+    border:
+        1px solid var(--line);
+
+    background:
+        #ffffff08;
+
+    color: var(--text);
+
+    padding:
+        10px 15px;
+
+    border-radius: 11px;
+
+    cursor: pointer;
+
+    transition: .2s;
+
+}
+
+
+.ghost-btn:hover {
+
+    background:
+        #ffffff12;
+
+    transform:
+        translateY(-2px);
+
+}
+
+
+/* HERO */
+
+.hero {
+
+    border:
+        1px solid var(--line);
+
+    background:
+        linear-gradient(
+            145deg,
+            #101a2aee,
+            #0b1320ee
+        );
+
+    box-shadow:
+        var(--shadow);
+
+    backdrop-filter:
+        blur(14px);
+
+    border-radius: 24px;
+
+    padding: 28px 30px;
+
+    margin-bottom: 16px;
+
+    display: flex;
+
+    gap: 30px;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        flex-end;
+
+}
+
+
+.hero-content {
+
+    flex: 1;
+
+}
+
+
+.pill {
+
+    display: inline-flex;
+
+    padding:
+        7px 11px;
+
+    border-radius: 99px;
+
+    background:
+        #4f8cff16;
+
+    color:
+        #8db5ff;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    margin-bottom: 13px;
+
+}
+
+
+.hero h2 {
+
+    font:
+        700
+        clamp(25px,4vw,39px)
+        'Space Grotesk';
+
+    max-width: 650px;
+
+    line-height: 1.08;
+
+}
+
+
+.hero p {
+
+    color: var(--muted);
+
+    margin-top: 10px;
+
+    font-size: 14px;
+
+}
+
+
+/* PROGRESSO */
+
+.progress-area {
+
+    width:
+        min(300px,100%);
+
+}
+
+
+.progress-label {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    font-size: 10px;
+
+    color: var(--muted);
+
+    margin-bottom: 8px;
+
+}
+
+
+.progress-label strong {
+
+    color: #fff;
+
+}
+
+
+.progress-track {
+
+    height: 7px;
+
+    border-radius: 99px;
+
+    background:
+        #ffffff0b;
+
+    overflow: hidden;
+
+}
+
+
+.progress-bar {
+
+    height: 100%;
+
+    width: 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--blue),
+            var(--cyan)
+        );
+
+    border-radius: 99px;
+
+    transition:
+        width .5s;
+
+}
+
+
+/* INDICADORES */
+
+.stats-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap: 14px;
+
+    margin-bottom: 16px;
+
+}
+
+
+.stat-card {
+
+    border:
+        1px solid var(--line);
+
+    background:
+        linear-gradient(
+            145deg,
+            #101a2aee,
+            #0b1320ee
+        );
+
+    box-shadow:
+        var(--shadow);
+
+    backdrop-filter:
+        blur(14px);
+
+    border-radius: 18px;
+
+    padding: 18px;
+
+}
+
+
+.stat-top {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+    font-weight: 700;
+
+    font-size: 13px;
+
+}
+
+
+.stat-top b {
+
+    font:
+        700 25px
+        'Space Grotesk';
+
+}
+
+
+.meter {
+
+    height: 7px;
+
+    margin:
+        13px 0 8px;
+
+    border-radius: 99px;
+
+    background:
+        #ffffff0b;
+
+    overflow: hidden;
+
+}
+
+
+.meter div {
+
+    height: 100%;
+
+    width: 50%;
+
+    transition:
+        width .6s;
+
+}
+
+
+.education-card
+.meter div {
+
+    background:
+        linear-gradient(
+            90deg,
+            #4f8cff,
+            #7da8ff
+        );
+
+}
+
+
+.participation-card
+.meter div {
+
+    background:
+        linear-gradient(
+            90deg,
+            #20c997,
+            #65e6bd
+        );
+
+}
+
+
+.score-card
+.stat-top b {
+
+    color:
+        var(--yellow);
+
+}
+
+
+.score-sub {
+
+    margin:
+        11px 0 5px;
+
+    color: #fff;
+
+    font-size: 12px;
+
+}
+
+
+.stat-card small {
+
+    color:
+        var(--muted);
+
+    font-size: 10px;
+
+}
+
+
+/* MISSÃO */
+
+.mission-card {
+
+    border:
+        1px solid var(--line);
+
+    background:
+        linear-gradient(
+            145deg,
+            #101a2aee,
+            #0b1320ee
+        );
+
+    box-shadow:
+        var(--shadow);
+
+    backdrop-filter:
+        blur(14px);
+
+    border-radius: 24px;
+
+    padding: 25px;
+
+}
+
+
+.mission-meta {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing:
+        1.5px;
+
+    color:
+        #8ca4c4;
+
+}
+
+
+.mission-meta
+span:last-child {
+
+    color:
+        var(--cyan);
+
+}
+
+
+.mission-content {
+
+    display: flex;
+
+    gap: 16px;
+
+    align-items: center;
+
+    margin:
+        18px 0 22px;
+
+}
+
+
+.mission-icon {
+
+    width: 58px;
+
+    height: 58px;
+
+    flex:
+        0 0 58px;
+
+    border-radius: 17px;
+
+    display: grid;
+
+    place-items: center;
+
+    background:
+        #4f8cff12;
+
+    border:
+        1px solid #4f8cff22;
+
+    font-size: 27px;
+
+}
+
+
+.mission-content h3 {
+
+    font:
+        700
+        clamp(20px,3vw,28px)
+        'Space Grotesk';
+
+    line-height:
+        1.2;
+
+}
+
+
+.mission-content p {
+
+    color:
+        var(--muted);
+
+    font-size: 12px;
+
+    margin-top: 6px;
+
+}
+
+
+/* OPÇÕES */
+
+.options {
+
+    display: grid;
+
+    gap: 10px;
+
+}
+
+
+.option {
+
+    width: 100%;
+
+    text-align: left;
+
+    border:
+        1px solid var(--line);
+
+    background:
+        #ffffff05;
+
+    color:
+        var(--text);
+
+    padding:
+        16px 17px;
+
+    border-radius: 14px;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    transition:
+        .2s;
+
+    min-height: 60px;
+
+}
+
+
+.option:hover:not(:disabled) {
+
+    transform:
+        translateY(-2px);
+
+    border-color:
+        #4f8cff66;
+
+    background:
+        #4f8cff0d;
+
+}
+
+
+.option .letter {
+
+    width: 29px;
+
+    height: 29px;
+
+    border-radius: 9px;
+
+    display: grid;
+
+    place-items: center;
+
+    background:
+        #ffffff0a;
+
+    color:
+        #9eb4d2;
+
+    font-weight: 800;
+
+    font-size: 12px;
+
+    flex:
+        0 0 29px;
+
+}
+
+
+.option.correct {
+
+    border-color:
+        #35df9a80;
+
+    background:
+        #35df9a0e;
+
+}
+
+
+.option.wrong {
+
+    border-color:
+        #ff6b7a80;
+
+    background:
+        #ff6b7a0e;
+
+}
+
+
+.option:disabled {
+
+    cursor:
+        default;
+
+}
+
+
+.choice-text {
+
+    flex: 1;
+
+    font-weight: 600;
+
+    font-size: 13px;
+
+}
+
+
+.impact {
+
+    font-size: 11px;
+
+    color:
+        var(--muted);
+
+    white-space:
+        nowrap;
+
+}
+
+
+.impact.positive {
+
+    color:
+        var(--green);
+
+}
+
+
+.impact.negative {
+
+    color:
+        var(--red);
+
+}
+
+
+/* MENSAGEM */
+
+.message {
+
+    min-height: 22px;
+
+    margin-top: 14px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+.message.success {
+
+    color:
+        var(--green);
+
+}
+
+
+.message.warn {
+
+    color:
+        var(--yellow);
+
+}
+
+
+/* BOTÃO PRÓXIMA */
+
+.action-row {
+
+    text-align:
+        right;
+
+    margin:
+        15px 0;
+
+}
+
+
+.primary-btn {
+
+    border: 0;
+
+    padding:
+        13px 22px;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--blue),
+            #6c63ff
+        );
+
+    color: #fff;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 10px 30px #4f8cff24;
+
+    transition:
+        .2s;
+
+}
+
+
+.primary-btn:disabled {
+
+    opacity: .35;
+
+    cursor:
+        not-allowed;
+
+    box-shadow:
+        none;
+
+}
+
+
+.primary-btn:not(:disabled):hover {
+
+    transform:
+        translateY(-2px);
+
+}
+
+
+/* RESULTADO */
+
+.result-box {
+
+    padding: 18px;
+
+    border:
+        1px solid var(--line);
+
+    background:
+        #ffffff04;
+
+    border-radius: 14px;
+
+    line-height:
+        1.9;
+
+    color:
+        #b9c8dc;
+
+    font-size: 14px;
+
+}
+
+
+/* CONQUISTAS */
+
+.badges-panel {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+}
+
+
+.badge {
+
+    padding:
+        9px 12px;
+
+    border:
+        1px solid #ffd16633;
+
+    background:
+        #ffd1660b;
+
+    border-radius: 10px;
+
+    font-size: 11px;
+
+    color:
+        #f7d989;
+
+}
+
+
+/* RODAPÉ */
+
+footer {
+
+    text-align:
+        center;
+
+    color:
+        #52627a;
+
+    font-size: 10px;
+
+    margin-top:
+        28px;
+
+}
+
+
+/* RESPONSIVO */
+
+@media (max-width:760px) {
+
+    .hero {
+
+        display: block;
+
+    }
+
+
+    .progress-area {
+
+        margin-top: 22px;
+
+    }
+
+
+    .stats-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .mission-card {
+
+        padding: 19px;
+
+    }
+
+
+    .game-shell {
+
+        width: 94%;
+
+        padding-top: 18px;
+
+    }
+
+
+    .option {
+
+        align-items:
+            flex-start;
+
+    }
+
+
+    .impact {
+
+        display: none;
+
+    }
+
+}
+
+
+@media (max-width:480px) {
+
+    .topbar {
+
+        align-items:
+            flex-start;
+
+    }
+
+
+    .ghost-btn {
+
+        font-size: 11px;
+
+        padding:
+            8px 10px;
+
+    }
+
+
+    h1 {
+
+        font-size: 20px;
+
+    }
+
+
+    .hero {
+
+        padding:
+            22px 18px;
+
+    }
+
+
+    .hero h2 {
+
+        font-size: 27px;
+
+    }
+
+
+    .mission-content {
+
+        align-items:
+            flex-start;
+
+    }
+
+
+    .mission-icon {
+
+        width: 48px;
+
+        height: 48px;
+
+        flex-basis: 48px;
+
+        font-size: 22px;
+
+    }
+
+}
