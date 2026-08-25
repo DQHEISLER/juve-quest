@@ -1,6 +1,3 @@
-/* ==========================================================================
-   INICIALIZAÇÃO & VARIÁVEIS GLOBAIS
-   ========================================================================== */
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -13,6 +10,9 @@ const overlayTitle = document.getElementById('overlayTitle');
 const overlaySub = document.getElementById('overlaySub');
 const startBtn = document.getElementById('startBtn');
 const themeSelect = document.getElementById('themeSelect');
+const modeSelect = document.getElementById('modeSelect');
+const touchControls = document.getElementById('touchControls');
+const modeInfo = document.getElementById('modeInfo');
 
 let score = 0;
 let highScore = localStorage.getItem('arcade_highscore') || 0;
@@ -23,25 +23,40 @@ let lastTime = 0;
 
 highScoreEl.textContent = highScore;
 
-// Controle de Temas
+/* ALTERNAR MODO DE JOGO (COMPUTADOR / CELULAR) */
+function updateGameMode() {
+    const isMobile = modeSelect.value === 'mobile';
+    if (isMobile) {
+        touchControls.classList.add('active');
+        modeInfo.textContent = '💡 Modo Celular: Use os botões na tela ou toque/arraste no canvas.';
+        overlaySub.textContent = 'Modo Celular selecionado! Toque para mover e atirar.';
+    } else {
+        touchControls.classList.remove('active');
+        modeInfo.textContent = '💡 Modo PC: Mova com W/S/A/D ou Setas | Atire com Espaço';
+        overlaySub.textContent = 'Modo Computador selecionado! Use o teclado para jogar.';
+    }
+}
+
+// Auto-detectar tela menor para definir o modo padrão
+if (window.innerWidth <= 768) {
+    modeSelect.value = 'mobile';
+}
+updateGameMode();
+
+modeSelect.addEventListener('change', updateGameMode);
+
 themeSelect.addEventListener('change', (e) => {
     document.body.setAttribute('data-theme', e.target.value);
 });
 
-/* ==========================================================================
-   GERENCIADOR DE ÁUDIO (SINTETIZADOR WEB AUDIO API)
-   ========================================================================== */
+/* SINTETIZADOR DE ÁUDIO */
 const AudioSys = {
     ctx: null,
     init() {
-        if (!this.ctx) {
-            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (this.ctx.state === 'suspended') {
-            this.ctx.resume();
-        }
+        if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (this.ctx.state === 'suspended') this.ctx.resume();
     },
-    playTone(freq, type, duration, vol = 0.1) {
+    play(freq, type, duration, vol = 0.08) {
         if (!this.ctx) return;
         try {
             const osc = this.ctx.createOscillator();
@@ -56,24 +71,22 @@ const AudioSys = {
             osc.stop(this.ctx.currentTime + duration);
         } catch (e) {}
     },
-    shoot() { this.playTone(800, 'square', 0.08, 0.05); },
-    explosion() { this.playTone(100, 'sawtooth', 0.25, 0.15); },
-    powerup() { this.playTone(1200, 'sine', 0.2, 0.1); },
-    hit() { this.playTone(250, 'triangle', 0.15, 0.1); }
+    shoot() { this.play(750, 'square', 0.08); },
+    explosion() { this.play(100, 'sawtooth', 0.22, 0.15); },
+    powerup() { this.play(1100, 'sine', 0.18); },
+    hit() { this.play(200, 'triangle', 0.12); }
 };
 
-/* ==========================================================================
-   ESTRUTURAS DO JOGO (JOGADOR, TIROS, INIMIGOS, POWER-UPS, PARTÍCULAS)
-   ========================================================================== */
+/* ESTADO DO JOGADOR */
 const player = {
     x: 80,
     y: canvas.height / 2,
     size: 18,
-    speed: 350, // Pixels por segundo
+    speed: 360,
     shield: false,
     tripleShotTimer: 0,
     lastShot: 0,
-    fireRate: 0.15 // Intervalo mínimo de tiro
+    fireRate: 0.14
 };
 
 let keys = {};
@@ -83,25 +96,69 @@ let powerups = [];
 let particles = [];
 let stars = [];
 
-// Inicialização das Estrelas do Fundo (Starfield)
-for (let i = 0; i < 60; i++) {
+for (let i = 0; i < 50; i++) {
     stars.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
         size: Math.random() * 2 + 0.5,
-        speed: Math.random() * 80 + 20
+        speed: Math.random() * 70 + 20
     });
 }
 
-// Eventos de Teclado
+/* TECLADO (PC) */
 window.addEventListener('keydown', (e) => keys[e.key] = true);
 window.addEventListener('keyup', (e) => keys[e.key] = false);
 
-/* ==========================================================================
-   LÓGICA DE GERACÃO E ATUALIZAÇÃO DE ENTIDADES
-   ========================================================================== */
+/* BOTÕES TOUCH (MOBILE) */
+const bindTouchBtn = (id, keyName) => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    btn.addEventListener('touchstart', (e) => { e.preventDefault(); keys[keyName] = true; });
+    btn.addEventListener('touchend', (e) => { e.preventDefault(); keys[keyName] = false; });
+    btn.addEventListener('mousedown', (e) => { keys[keyName] = true; });
+    btn.addEventListener('mouseup', (e) => { keys[keyName] = false; });
+};
+
+bindTouchBtn('btnUp', 'ArrowUp');
+bindTouchBtn('btnDown', 'ArrowDown');
+bindTouchBtn('btnLeft', 'ArrowLeft');
+bindTouchBtn('btnRight', 'ArrowRight');
+bindTouchBtn('btnFire', ' ');
+
+/* TOQUE DIRETO NO CANVAS (MOBILE) */
+let isTouching = false;
+canvas.addEventListener('touchstart', (e) => {
+    if (modeSelect.value !== 'mobile') return;
+    AudioSys.init();
+    isTouching = true;
+    keys[' '] = true;
+    handleTouchMove(e);
+});
+
+canvas.addEventListener('touchmove', (e) => {
+    if (modeSelect.value !== 'mobile') return;
+    if (isTouching) handleTouchMove(e);
+});
+
+canvas.addEventListener('touchend', () => {
+    if (modeSelect.value !== 'mobile') return;
+    isTouching = false;
+    keys[' '] = false;
+});
+
+function handleTouchMove(e) {
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    if (touch) {
+        const scaleY = canvas.height / rect.height;
+        const scaleX = canvas.width / rect.width;
+        player.y = (touch.clientY - rect.top) * scaleY;
+        player.x = (touch.clientX - rect.left) * scaleX;
+    }
+}
+
 function spawnEnemy() {
-    const isHoming = Math.random() < 0.25; // 25% de chance de ser perseguição
+    const isHoming = Math.random() < 0.25;
     enemies.push({
         x: canvas.width + 30,
         y: Math.random() * (canvas.height - 40) + 20,
@@ -116,26 +173,25 @@ function spawnEnemy() {
 
 function spawnPowerup() {
     const types = ['shield', 'life', 'triple'];
-    const chosenType = types[Math.floor(Math.random() * types.length)];
     powerups.push({
         x: canvas.width + 20,
         y: Math.random() * (canvas.height - 40) + 20,
         radius: 12,
-        type: chosenType,
+        type: types[Math.floor(Math.random() * types.length)],
         vx: -100
     });
 }
 
-function createExplosion(x, y, color, count = 12) {
+function createExplosion(x, y, color, count = 10) {
     for (let i = 0; i < count; i++) {
         const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 150 + 50;
+        const speed = Math.random() * 140 + 40;
         particles.push({
             x, y,
             vx: Math.cos(angle) * speed,
             vy: Math.sin(angle) * speed,
-            life: 0.4,
-            maxLife: 0.4,
+            life: 0.35,
+            maxLife: 0.35,
             color: color || '#ff0055'
         });
     }
@@ -149,87 +205,63 @@ function shoot() {
     AudioSys.shoot();
 
     if (player.tripleShotTimer > 0) {
-        bullets.push({ x: player.x + player.size, y: player.y, vx: 500, vy: -100 });
+        bullets.push({ x: player.x + player.size, y: player.y, vx: 500, vy: -90 });
         bullets.push({ x: player.x + player.size, y: player.y, vx: 550, vy: 0 });
-        bullets.push({ x: player.x + player.size, y: player.y, vx: 500, vy: 100 });
+        bullets.push({ x: player.x + player.size, y: player.y, vx: 500, vy: 90 });
     } else {
         bullets.push({ x: player.x + player.size, y: player.y, vx: 550, vy: 0 });
     }
 }
 
-/* ==========================================================================
-   LOOP DE ATUALIZAÇÃO DA FÍSICA (DELTA TIME OTIMIZADO)
-   ========================================================================== */
 function update(dt) {
     if (gameOver) return;
 
-    // Movimentação do Jogador
     if (keys['ArrowUp'] || keys['w'] || keys['W']) player.y -= player.speed * dt;
     if (keys['ArrowDown'] || keys['s'] || keys['S']) player.y += player.speed * dt;
     if (keys['ArrowLeft'] || keys['a'] || keys['A']) player.x -= player.speed * dt;
     if (keys['ArrowRight'] || keys['d'] || keys['D']) player.x += player.speed * dt;
 
-    // Limites da Tela
     player.x = Math.max(player.size, Math.min(canvas.width - player.size, player.x));
     player.y = Math.max(player.size, Math.min(canvas.height - player.size, player.y));
 
-    // Ação de Atirar
-    if (keys[' '] || keys['k'] || keys['K']) {
-        shoot();
-    }
+    if (keys[' '] || keys['k'] || keys['K']) shoot();
 
-    // Contadores de Tempo de Power-up
     if (player.tripleShotTimer > 0) {
         player.tripleShotTimer -= dt;
         if (player.tripleShotTimer <= 0) updateHUD();
     }
 
-    // Atualização do Fundo (Estrelas)
     stars.forEach(s => {
         s.x -= s.speed * dt;
         if (s.x < 0) s.x = canvas.width;
     });
 
-    // Spawns Aleatórios Otimizados
-    if (Math.random() < 1.5 * dt) spawnEnemy();
+    if (Math.random() < 1.4 * dt) spawnEnemy();
     if (Math.random() < 0.1 * dt) spawnPowerup();
 
-    // Atualizar Tiros
     for (let i = bullets.length - 1; i >= 0; i--) {
         let b = bullets[i];
         b.x += b.vx * dt;
         b.y += b.vy * dt;
-        if (b.x > canvas.width || b.y < 0 || b.y > canvas.height) {
-            bullets.splice(i, 1);
-        }
+        if (b.x > canvas.width || b.y < 0 || b.y > canvas.height) bullets.splice(i, 1);
     }
 
-    // Atualizar Inimigos & Colisão com Tiros
     for (let i = enemies.length - 1; i >= 0; i--) {
         let e = enemies[i];
-
-        // Lógica de Perseguição Simples (Homing)
-        if (e.isHoming) {
-            let dy = player.y - e.y;
-            e.vy = Math.sign(dy) * 60;
-        }
+        if (e.isHoming) e.vy = Math.sign(player.y - e.y) * 55;
 
         e.x += e.vx * dt;
         e.y += e.vy * dt;
 
-        // Colisão Tiro vs Inimigo
         for (let j = bullets.length - 1; j >= 0; j--) {
             let b = bullets[j];
-            if (
-                b.x > e.x && b.x < e.x + e.width &&
-                b.y > e.y && b.y < e.y + e.height
-            ) {
+            if (b.x > e.x && b.x < e.x + e.width && b.y > e.y && b.y < e.y + e.height) {
                 e.hp--;
                 bullets.splice(j, 1);
                 createExplosion(b.x, b.y, '#ffff00', 4);
 
                 if (e.hp <= 0) {
-                    createExplosion(e.x + e.width / 2, e.y + e.height / 2, e.isHoming ? '#ff0055' : '#ffaa00', 12);
+                    createExplosion(e.x + e.width / 2, e.y + e.height / 2, e.isHoming ? '#ff0055' : '#ffaa00', 10);
                     AudioSys.explosion();
                     score += e.isHoming ? 25 : 10;
                     scoreEl.textContent = score;
@@ -241,14 +273,11 @@ function update(dt) {
 
         if (!enemies[i]) continue;
 
-        // Colisão Inimigo vs Jogador
         if (
-            player.x + player.size > e.x &&
-            player.x - player.size < e.x + e.width &&
-            player.y + player.size > e.y &&
-            player.y - player.size < e.y + e.height
+            player.x + player.size > e.x && player.x - player.size < e.x + e.width &&
+            player.y + player.size > e.y && player.y - player.size < e.y + e.height
         ) {
-            createExplosion(e.x, e.y, '#ff0000', 15);
+            createExplosion(e.x, e.y, '#ff0000', 12);
             enemies.splice(i, 1);
 
             if (player.shield) {
@@ -264,17 +293,14 @@ function update(dt) {
             continue;
         }
 
-        // Remover inimigos fora da tela
         if (e.x + e.width < 0) enemies.splice(i, 1);
     }
 
-    // Atualizar e Coletar Power-ups
     for (let i = powerups.length - 1; i >= 0; i--) {
         let p = powerups[i];
         p.x += p.vx * dt;
 
-        let dist = Math.hypot(player.x - p.x, player.y - p.y);
-        if (dist < player.size + p.radius) {
+        if (Math.hypot(player.x - p.x, player.y - p.y) < player.size + p.radius) {
             AudioSys.powerup();
             if (p.type === 'shield') player.shield = true;
             if (p.type === 'life') lives = Math.min(lives + 1, 5);
@@ -288,7 +314,6 @@ function update(dt) {
         if (p.x < -20) powerups.splice(i, 1);
     }
 
-    // Atualizar Partículas
     for (let i = particles.length - 1; i >= 0; i--) {
         let pt = particles[i];
         pt.x += pt.vx * dt;
@@ -298,9 +323,6 @@ function update(dt) {
     }
 }
 
-/* ==========================================================================
-   RENDERIZAÇÃO GRÁFICA (CANVAS COMPATÍVEL COM TODOS OS TEMAS)
-   ========================================================================== */
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -310,7 +332,6 @@ function draw() {
     const bulletColor = style.getPropertyValue('--bullet-color').trim();
     const textColor = style.getPropertyValue('--text-color').trim();
 
-    // Starfield
     ctx.fillStyle = textColor;
     stars.forEach(s => {
         ctx.globalAlpha = Math.random() * 0.5 + 0.3;
@@ -319,7 +340,6 @@ function draw() {
     ctx.globalAlpha = 1.0;
 
     if (!gameOver) {
-        // Escudo Visual
         if (player.shield) {
             ctx.strokeStyle = '#00ffff';
             ctx.lineWidth = 2;
@@ -328,7 +348,6 @@ function draw() {
             ctx.stroke();
         }
 
-        // Nave do Jogador
         ctx.fillStyle = playerColor;
         ctx.beginPath();
         ctx.moveTo(player.x + player.size, player.y);
@@ -339,23 +358,16 @@ function draw() {
         ctx.fill();
     }
 
-    // Tiros
     ctx.fillStyle = bulletColor;
-    bullets.forEach(b => {
-        ctx.fillRect(b.x, b.y - 2, 10, 4);
-    });
+    bullets.forEach(b => ctx.fillRect(b.x, b.y - 2, 10, 4));
 
-    // Inimigos
     enemies.forEach(e => {
         ctx.fillStyle = e.isHoming ? accentColor : '#ff8800';
         ctx.fillRect(e.x, e.y, e.width, e.height);
-        
-        // Detalhe Inimigo
         ctx.fillStyle = '#000';
         ctx.fillRect(e.x + 4, e.y + 4, e.width - 8, e.height - 8);
     });
 
-    // Power-ups
     powerups.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
@@ -368,7 +380,6 @@ function draw() {
         ctx.fillText(p.type[0].toUpperCase(), p.x, p.y);
     });
 
-    // Partículas
     particles.forEach(pt => {
         ctx.fillStyle = pt.color;
         ctx.globalAlpha = pt.life / pt.maxLife;
@@ -377,9 +388,6 @@ function draw() {
     ctx.globalAlpha = 1.0;
 }
 
-/* ==========================================================================
-   GERENCIAMENTO DE ESTADO E HUD
-   ========================================================================== */
 function updateHUD() {
     scoreEl.textContent = score;
     livesEl.textContent = '❤️'.repeat(Math.max(0, lives));
@@ -392,15 +400,13 @@ function updateHUD() {
 
 function gameLoop(time) {
     if (!lastTime) lastTime = time;
-    const dt = Math.min((time - lastTime) / 1000, 0.1); // Limitador de Delta Time
+    const dt = Math.min((time - lastTime) / 1000, 0.1);
     lastTime = time;
 
     update(dt);
     draw();
 
-    if (!gameOver) {
-        animationId = requestAnimationFrame(gameLoop);
-    }
+    if (!gameOver) animationId = requestAnimationFrame(gameLoop);
 }
 
 function startGame() {
