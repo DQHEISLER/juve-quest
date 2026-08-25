@@ -1,6 +1,3 @@
-/* ==========================================================================
-   SISTEMA DE VARIÁVEIS E TEMAS (LAYOUTS)
-   ========================================================================== */
 :root {
     --bg-color: #0b0d17;
     --card-bg: #16192b;
@@ -9,7 +6,7 @@
     --player-color: #00ffcc;
     --bullet-color: #ffff00;
     --canvas-bg: #05070e;
-    --font-family: 'Courier New', Courier, monospace;
+    --font-family: system-ui, -apple-system, sans-serif;
     --border-glow: 0 0 15px rgba(0, 255, 204, 0.4);
 }
 
@@ -21,7 +18,6 @@
     --player-color: #00ffff;
     --bullet-color: #ff007f;
     --canvas-bg: #090112;
-    --font-family: 'Segoe UI', Tahoma, sans-serif;
     --border-glow: 0 0 15px rgba(255, 0, 127, 0.5);
 }
 
@@ -33,7 +29,6 @@
     --player-color: #39ff14;
     --bullet-color: #00ffff;
     --canvas-bg: #000000;
-    --font-family: Arial, sans-serif;
     --border-glow: 0 0 20px rgba(57, 255, 20, 0.6);
 }
 
@@ -45,17 +40,16 @@
     --player-color: #2563eb;
     --bullet-color: #dc2626;
     --canvas-bg: #f8fafc;
-    --font-family: 'Trebuchet MS', sans-serif;
     --border-glow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-/* ==========================================================================
-   ESTILOS GERAIS & ESTRUTURA
-   ========================================================================== */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
 }
 
 body {
@@ -66,14 +60,15 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    transition: background-color 0.4s ease, color 0.4s ease;
+    padding: 10px;
+    touch-action: none;
 }
 
 .game-container {
     background-color: var(--card-bg);
     border: 2px solid var(--accent-color);
     border-radius: 12px;
-    padding: 20px;
+    padding: 12px;
     box-shadow: var(--border-glow);
     position: relative;
     max-width: 840px;
@@ -84,40 +79,46 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 .brand {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: bold;
-    letter-spacing: 1px;
+}
+
+.controls {
+    display: flex;
+    gap: 8px;
 }
 
 select {
-    padding: 6px 12px;
+    padding: 6px;
     border-radius: 6px;
     border: 1px solid var(--accent-color);
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: inherit;
     cursor: pointer;
-    outline: none;
 }
 
 .hud {
     display: flex;
     justify-content: space-between;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     background: rgba(0,0,0,0.2);
-    padding: 8px 12px;
+    padding: 6px 10px;
     border-radius: 6px;
 }
 
 .canvas-wrapper {
     position: relative;
     width: 100%;
+    touch-action: none;
 }
 
 canvas {
@@ -127,6 +128,7 @@ canvas {
     display: block;
     width: 100%;
     height: auto;
+    touch-action: none;
 }
 
 .overlay {
@@ -135,30 +137,26 @@ canvas {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(0, 0, 0, 0.88);
     border-radius: 6px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
     color: #ffffff;
     z-index: 10;
+    padding: 15px;
+    text-align: center;
 }
 
 .overlay h1 {
-    font-size: 2.5rem;
+    font-size: 2rem;
     color: var(--text-color);
-    text-shadow: 0 0 10px var(--text-color);
 }
 
-.overlay p {
-    font-size: 1rem;
-    opacity: 0.9;
-}
-
-button {
-    padding: 12px 28px;
+button#startBtn {
+    padding: 12px 24px;
     font-size: 1rem;
     font-weight: bold;
     background-color: var(--accent-color);
@@ -166,17 +164,64 @@ button {
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    transition: transform 0.1s ease, filter 0.2s;
 }
 
-button:hover {
-    transform: scale(1.05);
-    filter: brightness(1.2);
+/* CONTROLES TOUCH */
+.touch-controls {
+    display: none; /* Escondido por padrão no Modo PC */
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding: 5px 10px;
+}
+
+.touch-controls.active {
+    display: flex; /* Exibido apenas no Modo Celular */
+}
+
+.dpad {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dpad-middle {
+    display: flex;
+    gap: 15px;
+}
+
+.t-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--accent-color);
+    color: var(--text-color);
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    touch-action: manipulation;
+}
+
+.t-btn:active {
+    background: var(--accent-color);
+    color: #fff;
+}
+
+.btn-fire {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    color: #fff;
+    font-size: 0.9rem;
 }
 
 .footer-info {
-    margin-top: 12px;
+    margin-top: 8px;
     text-align: center;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     opacity: 0.8;
 }
