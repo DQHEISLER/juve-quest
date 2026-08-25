@@ -23,33 +23,7 @@ let lastTime = 0;
 
 highScoreEl.textContent = highScore;
 
-/* ALTERNAR MODO DE JOGO (COMPUTADOR / CELULAR) */
-function updateGameMode() {
-    const isMobile = modeSelect.value === 'mobile';
-    if (isMobile) {
-        touchControls.classList.add('active');
-        modeInfo.textContent = '💡 Modo Celular: Use os botões na tela ou toque/arraste no canvas.';
-        overlaySub.textContent = 'Modo Celular selecionado! Toque para mover e atirar.';
-    } else {
-        touchControls.classList.remove('active');
-        modeInfo.textContent = '💡 Modo PC: Mova com W/S/A/D ou Setas | Atire com Espaço';
-        overlaySub.textContent = 'Modo Computador selecionado! Use o teclado para jogar.';
-    }
-}
-
-// Auto-detectar tela menor para definir o modo padrão
-if (window.innerWidth <= 768) {
-    modeSelect.value = 'mobile';
-}
-updateGameMode();
-
-modeSelect.addEventListener('change', updateGameMode);
-
-themeSelect.addEventListener('change', (e) => {
-    document.body.setAttribute('data-theme', e.target.value);
-});
-
-/* SINTETIZADOR DE ÁUDIO */
+/* SISTEMA DE ÁUDIO */
 const AudioSys = {
     ctx: null,
     init() {
@@ -77,12 +51,12 @@ const AudioSys = {
     hit() { this.play(200, 'triangle', 0.12); }
 };
 
-/* ESTADO DO JOGADOR */
+/* ESTADO DO JOGADOR E INPUTS */
 const player = {
     x: 80,
     y: canvas.height / 2,
     size: 18,
-    speed: 360,
+    speed: 380,
     shield: false,
     tripleShotTimer: 0,
     lastShot: 0,
@@ -105,58 +79,102 @@ for (let i = 0; i < 50; i++) {
     });
 }
 
-/* TECLADO (PC) */
-window.addEventListener('keydown', (e) => keys[e.key] = true);
-window.addEventListener('keyup', (e) => keys[e.key] = false);
-
-/* BOTÕES TOUCH (MOBILE) */
-const bindTouchBtn = (id, keyName) => {
-    const btn = document.getElementById(id);
-    if (!btn) return;
-    btn.addEventListener('touchstart', (e) => { e.preventDefault(); keys[keyName] = true; });
-    btn.addEventListener('touchend', (e) => { e.preventDefault(); keys[keyName] = false; });
-    btn.addEventListener('mousedown', (e) => { keys[keyName] = true; });
-    btn.addEventListener('mouseup', (e) => { keys[keyName] = false; });
-};
-
-bindTouchBtn('btnUp', 'ArrowUp');
-bindTouchBtn('btnDown', 'ArrowDown');
-bindTouchBtn('btnLeft', 'ArrowLeft');
-bindTouchBtn('btnRight', 'ArrowRight');
-bindTouchBtn('btnFire', ' ');
-
-/* TOQUE DIRETO NO CANVAS (MOBILE) */
-let isTouching = false;
-canvas.addEventListener('touchstart', (e) => {
-    if (modeSelect.value !== 'mobile') return;
-    AudioSys.init();
-    isTouching = true;
-    keys[' '] = true;
-    handleTouchMove(e);
-});
-
-canvas.addEventListener('touchmove', (e) => {
-    if (modeSelect.value !== 'mobile') return;
-    if (isTouching) handleTouchMove(e);
-});
-
-canvas.addEventListener('touchend', () => {
-    if (modeSelect.value !== 'mobile') return;
-    isTouching = false;
-    keys[' '] = false;
-});
-
-function handleTouchMove(e) {
-    const rect = canvas.getBoundingClientRect();
-    const touch = e.touches[0];
-    if (touch) {
-        const scaleY = canvas.height / rect.height;
-        const scaleX = canvas.width / rect.width;
-        player.y = (touch.clientY - rect.top) * scaleY;
-        player.x = (touch.clientX - rect.left) * scaleX;
+/* SELEÇÃO DE MODO (PC x CELULAR) */
+function setGameMode(mode) {
+    if (mode === 'mobile') {
+        touchControls.classList.add('active');
+        modeInfo.textContent = '💡 Modo Celular: Mova pelos botões ou tocando/arrastando na tela!';
+        overlaySub.textContent = 'Modo Celular ativo! Toque em Iniciar.';
+    } else {
+        touchControls.classList.remove('active');
+        modeInfo.textContent = '💡 Modo PC: Mova com W/S/A/D ou Setas | Atire com Espaço';
+        overlaySub.textContent = 'Modo Computador ativo! Use o teclado.';
     }
 }
 
+modeSelect.addEventListener('change', (e) => setGameMode(e.target.value));
+
+// Auto-detectar dispositivo no carregamento inicial
+if ('ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth <= 768) {
+    modeSelect.value = 'mobile';
+} else {
+    modeSelect.value = 'pc';
+}
+setGameMode(modeSelect.value);
+
+themeSelect.addEventListener('change', (e) => {
+    document.body.setAttribute('data-theme', e.target.value);
+});
+
+/* CONTROLES DE TECLADO (PC) */
+window.addEventListener('keydown', (e) => keys[e.key] = true);
+window.addEventListener('keyup', (e) => keys[e.key] = false);
+
+/* CONTROLES TOUCH MULTI-PLATAFORMA (POINTER EVENTS) */
+function setupTouchButton(id, keyName) {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+
+    const startPress = (e) => {
+        e.preventDefault();
+        AudioSys.init();
+        keys[keyName] = true;
+        btn.classList.add('active');
+    };
+
+    const stopPress = (e) => {
+        e.preventDefault();
+        keys[keyName] = false;
+        btn.classList.remove('active');
+    };
+
+    btn.addEventListener('pointerdown', startPress);
+    btn.addEventListener('pointerup', stopPress);
+    btn.addEventListener('pointercancel', stopPress);
+    btn.addEventListener('pointerleave', stopPress);
+}
+
+setupTouchButton('btnUp', 'ArrowUp');
+setupTouchButton('btnDown', 'ArrowDown');
+setupTouchButton('btnLeft', 'ArrowLeft');
+setupTouchButton('btnRight', 'ArrowRight');
+setupTouchButton('btnFire', ' ');
+
+/* TOQUE E ARRASTE NO CANVAS (CELULAR) */
+let canvasDragging = false;
+
+function handleCanvasTouch(e) {
+    if (modeSelect.value !== 'mobile' || gameOver) return;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    player.x = (e.clientX - rect.left) * scaleX;
+    player.y = (e.clientY - rect.top) * scaleY;
+}
+
+canvas.addEventListener('pointerdown', (e) => {
+    if (modeSelect.value !== 'mobile') return;
+    canvasDragging = true;
+    keys[' '] = true; // Dispara tiro automático enquanto arrasta no canvas
+    handleCanvasTouch(e);
+});
+
+canvas.addEventListener('pointermove', (e) => {
+    if (canvasDragging) handleCanvasTouch(e);
+});
+
+const endCanvasDrag = () => {
+    if (canvasDragging) {
+        canvasDragging = false;
+        keys[' '] = false;
+    }
+};
+
+canvas.addEventListener('pointerup', endCanvasDrag);
+canvas.addEventListener('pointercancel', endCanvasDrag);
+
+/* LÓGICA DE JOGO */
 function spawnEnemy() {
     const isHoming = Math.random() < 0.25;
     enemies.push({
