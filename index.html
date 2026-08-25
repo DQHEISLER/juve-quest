@@ -3,47 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JUVEQUEST</title>
-
-    style.css
+    <title>Arcade Space Shooter - Ultimate Edition</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-theme="retro">
 
-<div class="container">
+    <div class="game-container">
+        <!-- Barra de Controle & Seleção de Layout -->
+        <header class="top-bar">
+            <div class="brand">🚀 ARCADE SHOOTER ULTIMATE</div>
+            <div class="controls">
+                <label for="themeSelect">Layout / Tema:</label>
+                <select id="themeSelect">
+                    <option value="retro">🎮 Retro Arcade</option>
+                    <option value="cyberpunk">🌃 Cyberpunk Dark</option>
+                    <option value="neon">✨ Neon Glow</option>
+                    <option value="light">☀️ Light Clean</option>
+                </select>
+            </div>
+        </header>
 
-    <div class="header">
-        <h1>🎮 JUVEQUEST</h1>
-        <p>A Missão dos Direitos da Juventude</p>
-    </div>
-
-    <div class="scoreboard">
-        <div class="card">
-            <h3>🎓 EDUCAÇÃO</h3>
-            <span id="education">50</span>
+        <!-- HUD (Score, High Score, Vidas e Power-up Ativo) -->
+        <div class="hud">
+            <div>Score: <span id="score">0</span> | Recorde: <span id="highScore">0</span></div>
+            <div>Especial: <span id="powerupStatus">Nenhum</span></div>
+            <div>Vidas: <span id="lives">❤️❤️❤️</span></div>
         </div>
 
-        <div class="card">
-            <h3>🗳️ PARTICIPAÇÃO</h3>
-            <span id="participation">50</span>
+        <!-- Canvas do Jogo -->
+        <div class="canvas-wrapper">
+            <canvas id="gameCanvas" width="800" height="500"></canvas>
+            
+            <!-- Overlay Menu / Game Over -->
+            <div id="overlay" class="overlay">
+                <h1 id="overlayTitle">SPACE SHOOTER</h1>
+                <p id="overlaySub">Controles: [W/S] ou [Setas] Mover | [Espaço/K] Atirar</p>
+                <button id="startBtn">Iniciar Jogo</button>
+            </div>
         </div>
+
+        <!-- Instruções Rápidas -->
+        <footer class="footer-info">
+            <p>💡 Tipos de Itens: 🛡️ Escudo | ❤️ Vida | ⚡ Tiro Triplo</p>
+        </footer>
     </div>
 
-    <div class="mission-box">
-        <h2 id="missionTitle"></h2>
-        <div id="options"></div>
-    </div>
-
-    <button id="nextBtn">
-        Próxima Missão
-    </button>
-
-    <div id="message"></div>
-
-    <div id="badges"></div>
-
-</div>
-
-game.js
-
+    <script src="game.js"></script>
 </body>
 </html>
